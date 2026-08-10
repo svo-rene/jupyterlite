@@ -120,10 +120,16 @@ access to the file browser is not available.
 Every push to `main` triggers [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml), which
 builds the site and publishes it to GitHub Pages. Pull requests build too, but do not deploy.
 
-The custom domain lives in [`CNAME`](CNAME) and is copied into the build output. With the *GitHub
-Actions* publishing source, that file alone does not configure the domain — it also has to be set
-under **Settings → Pages → Custom domain**, with a DNS `CNAME` record for `jupyterlite.inf7.eu`
-pointing at `<user>.github.io`.
+Two things have to be in place for that to work:
+
+- **Pages must be enabled with *GitHub Actions* as the publishing source.** Without it the build
+  step still succeeds and only the deploy step fails, with `Ensure GitHub Pages has been enabled`.
+- **DNS must point at GitHub.** `jupyterlite.inf7.eu` needs a `CNAME` record to `<user>.github.io`,
+  or the four `185.199.10x.153` A records.
+
+The custom domain itself comes from [`CNAME`](CNAME), which the workflow copies into the build
+output — deploying that artifact registers the domain under **Settings → Pages → Custom domain**,
+so it does not have to be entered by hand.
 
 ## Browsers
 
