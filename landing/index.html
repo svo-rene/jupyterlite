@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Jupyter im Browser</title>
+
+    <!--
+      Dieses Script-Tag muss bleiben: JupyterLite erkennt daran das Wurzel-
+      verzeichnis der Installation. Ohne das Tag startet /lab nicht mehr.
+      Der zugehoerige Import von config-utils.js fehlt hier bewusst - genau der
+      wuerde sofort auf /lab weiterleiten, statt diese Seite anzuzeigen.
+    -->
+    <script id="jupyter-config-data" type="application/json" data-jupyter-lite-root=".">
+      {}
+    </script>
+
+    <style>
+      :root {
+        --bg: #ffffff;
+        --bg-soft: #f5f6f8;
+        --fg: #1f2328;
+        --fg-soft: #57606a;
+        --border: #d8dee4;
+        --accent: #f37726;
+        --accent-fg: #ffffff;
+        --link: #0a5ad6;
+        --ok-bg: #e6f4ea;
+        --ok-fg: #14532d;
+        --warn-bg: #fff4e5;
+        --warn-fg: #7a4100;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #14171c;
+          --bg-soft: #1c2027;
+          --fg: #e6e9ef;
+          --fg-soft: #a5adba;
+          --border: #2d333b;
+          --link: #7cb0ff;
+          --ok-bg: #12291b;
+          --ok-fg: #a7e3bd;
+          --warn-bg: #2e2113;
+          --warn-fg: #f0c48a;
+        }
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 0 1.25rem 4rem;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        line-height: 1.6;
+      }
+
+      main {
+        max-width: 62rem;
+        margin: 0 auto;
+      }
+
+      header {
+        padding: 3rem 0 1.5rem;
+        border-bottom: 1px solid var(--border);
+      }
+
+      h1 {
+        margin: 0 0 0.5rem;
+        font-size: clamp(1.9rem, 4vw, 2.6rem);
+        line-height: 1.2;
+      }
+
+      h2 {
+        margin: 2.75rem 0 0.75rem;
+        font-size: 1.35rem;
+      }
+
+      h3 {
+        margin: 0 0 0.25rem;
+        font-size: 1.05rem;
+      }
+
+      p {
+        margin: 0 0 1rem;
+      }
+
+      .lead {
+        margin: 0;
+        max-width: 46rem;
+        color: var(--fg-soft);
+        font-size: 1.1rem;
+      }
+
+      a {
+        color: var(--link);
+      }
+
+      .start {
+        display: inline-block;
+        margin: 1.5rem 0 0;
+        padding: 0.7rem 1.4rem;
+        border-radius: 0.5rem;
+        background: var(--accent);
+        color: var(--accent-fg);
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      .start:hover {
+        filter: brightness(1.08);
+      }
+
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+        gap: 0.85rem;
+        padding: 0;
+        margin: 0;
+        list-style: none;
+      }
+
+      .cards a {
+        display: block;
+        height: 100%;
+        padding: 0.9rem 1rem;
+        border: 1px solid var(--border);
+        border-radius: 0.6rem;
+        background: var(--bg-soft);
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .cards a:hover {
+        border-color: var(--accent);
+      }
+
+      .cards p {
+        margin: 0;
+        color: var(--fg-soft);
+        font-size: 0.92rem;
+      }
+
+      .note {
+        padding: 0.85rem 1.1rem;
+        border-radius: 0.6rem;
+        margin: 0 0 1rem;
+      }
+
+      .note.ok {
+        background: var(--ok-bg);
+        color: var(--ok-fg);
+      }
+
+      .note.warn {
+        background: var(--warn-bg);
+        color: var(--warn-fg);
+      }
+
+      code,
+      .out {
+        font-family: ui-monospace, SFMono-Regular, "Cascadia Mono", Consolas, monospace;
+        font-size: 0.92em;
+      }
+
+      code {
+        padding: 0.1rem 0.35rem;
+        border-radius: 0.3rem;
+        background: var(--bg-soft);
+      }
+
+      .share {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+        align-items: center;
+        margin-bottom: 0.9rem;
+      }
+
+      .share input {
+        flex: 1 1 22rem;
+        padding: 0.55rem 0.7rem;
+        border: 1px solid var(--border);
+        border-radius: 0.45rem;
+        background: var(--bg);
+        color: var(--fg);
+        font: inherit;
+      }
+
+      .share button {
+        padding: 0.55rem 1rem;
+        border: 1px solid var(--border);
+        border-radius: 0.45rem;
+        background: var(--bg-soft);
+        color: var(--fg);
+        font: inherit;
+        cursor: pointer;
+      }
+
+      .out {
+        display: block;
+        overflow-x: auto;
+        padding: 0.7rem 0.9rem;
+        border: 1px dashed var(--border);
+        border-radius: 0.45rem;
+        background: var(--bg-soft);
+        white-space: pre-wrap;
+        word-break: break-all;
+      }
+
+      footer {
+        margin-top: 3.5rem;
+        padding-top: 1.25rem;
+        border-top: 1px solid var(--border);
+        color: var(--fg-soft);
+        font-size: 0.92rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <main>
+      <header>
+        <h1>Jupyter im Browser</h1>
+        <p class="lead">
+          Python, SQL, JavaScript und p5.js – ohne Installation, ohne Anmeldung. Alles rechnet in
+          diesem Browser-Tab. Deine Notebooks und deine Daten bleiben auf deinem Rechner; aus dem
+          Netz kommen nur diese Seite und die Pakete, die ein Notebook nachlädt.
+        </p>
+        <a class="start" href="./lab/index.html">JupyterLab öffnen</a>
+      </header>
+
+      <h2>Zum Einstieg</h2>
+      <ul class="cards">
+        <li>
+          <a href="./lab/index.html?path=sql.ipynb">
+            <h3>SQL im Browser</h3>
+            <p>Abfragen auf einer kleinen Bibliotheks-Datenbank – von SELECT bis JOIN.</p>
+          </a>
+        </li>
+        <li>
+          <a href="./lab/index.html?path=python.ipynb">
+            <h3>Python</h3>
+            <p>Rundgang durch den Python-Kernel: Ausgabe, Fehler, Tabellen, Grafik.</p>
+          </a>
+        </li>
+        <li>
+          <a href="./lab/index.html?path=javascript.ipynb">
+            <h3>JavaScript</h3>
+            <p>JavaScript direkt im Notebook, ausgeführt in einem Web Worker.</p>
+          </a>
+        </li>
+        <li>
+          <a href="./lab/index.html?path=p5.ipynb">
+            <h3>p5.js</h3>
+            <p>Zeichnen und Animieren mit der Kreativ-Bibliothek p5.js.</p>
+          </a>
+        </li>
+      </ul>
+
+      <h2>Diagramme und Karten</h2>
+      <ul class="cards">
+        <li>
+          <a href="./lab/index.html?path=pyodide/matplotlib.ipynb">
+            <h3>Matplotlib</h3>
+            <p>Der Klassiker für Funktionsgraphen und Diagramme.</p>
+          </a>
+        </li>
+        <li>
+          <a href="./lab/index.html?path=pyodide/plotly.ipynb">
+            <h3>Plotly</h3>
+            <p>Interaktive Diagramme zum Zoomen und Erkunden.</p>
+          </a>
+        </li>
+        <li>
+          <a href="./lab/index.html?path=pyodide/altair.ipynb">
+            <h3>Altair</h3>
+            <p>Diagramme beschreiben statt zeichnen – deklarative Grafik.</p>
+          </a>
+        </li>
+        <li>
+          <a href="./lab/index.html?path=pyodide/ipyleaflet.ipynb">
+            <h3>Weltkarte</h3>
+            <p>Karte mit Diagramm: Länder anfahren und Zahlen von 1800 bis 2009 ansehen.</p>
+          </a>
+        </li>
+      </ul>
+
+      <h2>Interaktiv und Physik</h2>
+      <ul class="cards">
+        <li>
+          <a href="./lab/index.html?path=pyodide/interactive-widgets.ipynb">
+            <h3>Bedienelemente</h3>
+            <p>Schieberegler und Knöpfe, die Werte im Notebook verändern.</p>
+          </a>
+        </li>
+        <li>
+          <a href="./lab/index.html?path=pyodide/ipycanvas.ipynb">
+            <h3>Game of Life</h3>
+            <p>Conways Spiel des Lebens, gezeichnet auf einer Leinwand.</p>
+          </a>
+        </li>
+        <li>
+          <a href="./lab/index.html?path=pyodide/pyb2d/0_tutorial.ipynb">
+            <h3>Physik-Tutorial</h3>
+            <p>Schwerkraft, Gelenke und Partikel Schritt für Schritt.</p>
+          </a>
+        </li>
+        <li>
+          <a href="./lab/index.html?path=pyodide/pyb2d/games/rocket.ipynb">
+            <h3>Spiele</h3>
+            <p>Rakete landen, Billard spielen, Brücken bauen.</p>
+          </a>
+        </li>
+      </ul>
+
+      <h2>Dateien vom eigenen Rechner öffnen</h2>
+      <p>
+        Normalerweise liegen die Dateien im Speicher des Browsers. Es geht aber auch direkt mit
+        einem Ordner auf deiner Festplatte: In JupyterLab findest du links in der Leiste einen
+        zweiten Dateibrowser namens <strong>Local File System</strong>. Dort wählst du einen Ordner
+        aus, der Browser fragt einmal nach Erlaubnis – danach öffnest und speicherst du Notebooks
+        direkt in diesem Ordner, ganz ohne Hoch- und Herunterladen.
+      </p>
+      <div id="fs-status" class="note warn">
+        <strong>Prüfe deinen Browser …</strong>
+      </div>
+      <p>
+        Dahinter steckt die File System Access API, die es bisher nur in Chromium-Browsern gibt:
+        Chrome, Edge, Opera und Brave. In Firefox und Safari erscheint der zweite Dateibrowser
+        gar nicht erst – dort gehen Dateien nur über die Schaltflächen zum Hochladen und über
+        <em>Datei → Download</em>.
+      </p>
+
+      <h2>Ein Notebook per Link weitergeben</h2>
+      <p>
+        Hängst du <code>?fromURL=</code> und die Adresse einer <code>.ipynb</code>-Datei an, wird
+        diese beim Öffnen heruntergeladen und angezeigt. So teilst du ein Notebook, ohne dass
+        jemand etwas installieren oder hochladen muss.
+      </p>
+      <div class="share">
+        <input
+          id="share-input"
+          type="url"
+          placeholder="https://raw.githubusercontent.com/…/aufgabe.ipynb"
+          aria-label="Adresse der Notebook-Datei"
+        />
+        <button id="share-button" type="button">Link erzeugen</button>
+      </div>
+      <code class="out" id="share-output">Adresse eintragen und auf „Link erzeugen“ klicken.</code>
+      <p style="margin-top: 1rem">
+        Die Adresse muss auf die Datei selbst zeigen und von fremden Seiten abrufbar sein: Bei
+        GitHub also der <code>raw.githubusercontent.com</code>-Link (Schaltfläche <em>Raw</em>),
+        nicht die normale GitHub-Seite. Mehrere <code>fromURL</code> hintereinander öffnen mehrere
+        Dateien, etwa ein Notebook samt Datensatz. Mit <code>&amp;fromURLToFolder=uebungen</code>
+        landen sie in einem Ordner, der bei Bedarf angelegt wird.
+      </p>
+
+      <footer>
+        <p>
+          Diese Seite läuft mit <a href="https://jupyterlite.readthedocs.io">JupyterLite</a>.
+          Empfohlen wird ein Chromium-Browser (Chrome, Edge, Opera, Brave); in Firefox funktioniert
+          alles außer dem Zugriff auf lokale Ordner.
+        </p>
+      </footer>
+    </main>
+
+    <script>
+      // Tell people what their browser can do -- in Firefox the whole panel is
+      // missing, which is easy to mistake for "nothing here".
+      const status = document.getElementById("fs-status");
+      if ("showDirectoryPicker" in window) {
+        status.className = "note ok";
+        status.innerHTML =
+          "<strong>Dein Browser kann das.</strong> Der Eintrag <em>Local File System</em> " +
+          "erscheint in JupyterLab links in der Leiste.";
+      } else {
+        status.className = "note warn";
+        status.innerHTML =
+          "<strong>Dein Browser kann das nicht.</strong> Der Eintrag <em>Local File System</em> " +
+          "fehlt deshalb in der Leiste – er ist nicht kaputt, sondern für diesen Browser nicht " +
+          "verfügbar. Mit Chrome, Edge, Opera oder Brave ist er da.";
+      }
+
+      const input = document.getElementById("share-input");
+      const output = document.getElementById("share-output");
+
+      function buildShareLink() {
+        const target = input.value.trim();
+        if (!target) {
+          output.textContent = "Adresse eintragen und auf „Link erzeugen“ klicken.";
+          return;
+        }
+        const lab = new URL("./lab/index.html", window.location.href);
+        lab.searchParams.set("fromURL", target);
+        output.textContent = lab.href;
+      }
+
+      document.getElementById("share-button").addEventListener("click", buildShareLink);
+      input.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") buildShareLink();
+      });
+    </script>
+  </body>
+</html>

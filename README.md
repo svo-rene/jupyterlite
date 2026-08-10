@@ -47,6 +47,22 @@ in the notebooks. Code, identifiers and code comments are English throughout.
 Everything else — `numpy`, `pandas`, `matplotlib`, `sympy` and the rest of the Pyodide
 distribution — is available in the Python kernel via `%pip install <package>` at runtime.
 
+### The landing page
+
+`/` does not drop straight into JupyterLab. [`landing/index.html`](landing/index.html) is a static
+German page that lists the notebooks and explains the two features the interface does not advertise
+anywhere: the local filesystem panel and sharing notebooks with `?fromURL=`. It also tells visitors
+whether their own browser supports the filesystem panel — in Firefox that panel is simply absent,
+which is easy to mistake for nothing being there.
+
+The workflow copies that file over the `index.html` which `jupyter lite build` generates. The
+generated one is a redirect to `/lab`, and it carries something the apps need: the
+`<script id="jupyter-config-data" data-jupyter-lite-root=".">` tag that marks the root of the
+installation. The landing page keeps that tag — without it `/lab` does not start at all — and
+leaves out the `config-utils.js` import that performs the redirect. That is an undocumented detail
+of the JupyterLite layout, so it is worth re-testing after a JupyterLite upgrade. The apps
+themselves stay reachable at `/lab` and `/repl` either way.
+
 ### Extensions that are switched off
 
 [`repl/jupyter-lite.json`](repl/jupyter-lite.json) lists `@jupyterlab/drawio-extension`,
@@ -109,6 +125,7 @@ writes, and says so. Verified end to end in Chromium against the built site.
 python -m pip install -r requirements.txt
 cp README.md content
 jupyter lite build --contents content --output-dir dist
+cp landing/index.html dist/index.html
 python -m http.server -d dist            # then open http://localhost:8000
 ```
 

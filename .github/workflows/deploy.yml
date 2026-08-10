@@ -26,6 +26,7 @@ jobs:
           cp README.md content
           jupyter lite build --contents content --output-dir dist
           cp CNAME dist/CNAME
+          cp landing/index.html dist/index.html
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
