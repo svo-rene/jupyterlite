@@ -1,0 +1,97 @@
+.jp-ForgejoPanel {
+  padding: 8px 12px;
+  overflow-y: auto;
+  color: var(--jp-ui-font-color1);
+  background: var(--jp-layout-color1);
+  font-size: var(--jp-ui-font-size1);
+}
+
+.jp-ForgejoPanel-title {
+  font-size: var(--jp-ui-font-size2);
+  font-weight: 600;
+  margin: 4px 0 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.jp-ForgejoPanel > .jp-Button {
+  width: 100%;
+  margin: 4px 0 12px;
+}
+
+.jp-ForgejoPanel-user {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.jp-ForgejoPanel-clone {
+  border: var(--jp-border-width) solid var(--jp-border-color2);
+  border-radius: var(--jp-border-radius);
+  padding: 8px;
+  margin-bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.jp-ForgejoPanel-repo {
+  font-weight: 600;
+  word-break: break-all;
+}
+
+.jp-ForgejoPanel a {
+  color: var(--jp-content-link-color);
+}
+
+.jp-ForgejoPanel-branch,
+.jp-ForgejoPanel-status,
+.jp-ForgejoPanel-hint {
+  color: var(--jp-ui-font-color2);
+}
+
+.jp-ForgejoPanel-warning {
+  color: var(--jp-warn-color0);
+}
+
+.jp-ForgejoPanel-message {
+  color: var(--jp-error-color1);
+}
+
+.jp-ForgejoPanel-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.jp-ForgejoPanel-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 8px;
+}
+
+.jp-ForgejoPanel-form input {
+  padding: 4px;
+  min-width: 280px;
+}
+
+.jp-ForgejoPanel-changes {
+  max-height: 200px;
+  overflow-y: auto;
+  padding-left: 0;
+  list-style: none;
+}
+
+.jp-ForgejoPanel-op {
+  display: inline-block;
+  min-width: 70px;
+  color: var(--jp-ui-font-color2);
+}
+
+.jp-ForgejoPanel-report {
+  white-space: pre-wrap;
+}

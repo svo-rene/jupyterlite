@@ -4,8 +4,10 @@
 
 A [JupyterLite](https://jupyterlite.readthedocs.io) deployment: Jupyter notebooks that run
 entirely in the browser, served as a static site from GitHub Pages. There is no kernel server and
-no account: your notebooks and your data stay on your machine. Only the site itself and any
-packages a notebook installs are fetched over the network.
+no account is needed: your notebooks and your data stay on your machine. Only the site itself and
+any packages a notebook installs are fetched over the network. You can also sign in to
+[git.inf7.eu](https://git.inf7.eu) and keep your notebooks in Forgejo repositories, see
+below.
 
 ## ✨ Try it in your browser ✨
 
@@ -38,6 +40,7 @@ in the notebooks. Code, identifiers and code comments are English throughout.
 | --- | --- |
 | `jupyterlab-open-url-parameter` | opens a notebook from an external URL, see below |
 | `jupyterlab-filesystem-access` | reads and writes files in a folder on your own disk, see below |
+| `jupyterlite-forgejo` (in this repo, [`forgejo/`](forgejo/)) | signs in to Forgejo and syncs repositories with the file browser, see below |
 | `jupyterlab-language-pack-de-DE`, `-fr-FR`, `-uk-UA` | German, French and Ukrainian UI; German is the default in [`overrides.json`](overrides.json) |
 | `jupyterlab-night` | dark theme |
 | `jupyterlab-fasta`, `jupyterlab-geojson` | renderers for `.fasta` and `.geojson` files |
@@ -96,6 +99,25 @@ which currently only exists in **Chromium-based browsers** (Chrome, Edge, Opera,
 and Safari the rest of the site works, but this panel does not — there you use upload and download,
 or the `fromURL` parameter above.
 
+### Keeping notebooks in Forgejo
+
+[`forgejo/`](forgejo/) is an extension that lives in this repository. It adds a **Forgejo** panel
+(the cloud icon) to the left sidebar:
+
+- Sign in to [git.inf7.eu](https://git.inf7.eu) in a popup.
+- Fetch any repository you can write to into a folder of the file browser.
+- **Hochladen** commits your changes to the repository.
+- **Aktualisieren** brings in changes made elsewhere.
+
+The files sit in the browser storage like all others, so the kernel can read them too. A file
+changed on both sides is never overwritten: your version stays, and the Forgejo version is
+written next to it.
+
+It needs two things on the Forgejo side: an OAuth2 application, whose client ID goes into
+[`overrides.json`](overrides.json), and CORS enabled for this site in Forgejo's `app.ini`.
+[`forgejo/README.md`](forgejo/README.md) has both steps, how the sync works, and the security
+notes.
+
 ### The SQL example
 
 [`content/sql.ipynb`](content/sql.ipynb) writes plain SQL in `%sql` / `%%sql`
@@ -123,11 +145,16 @@ writes, and says so. Verified end to end in Chromium against the built site.
 
 ```bash
 python -m pip install -r requirements.txt
+(cd forgejo && npm ci && npm run build:prod)
 cp README.md content
 jupyter lite build --contents content --output-dir dist
 cp landing/index.html dist/index.html
+cp forgejo/callback.html dist/forgejo-callback.html
 python -m http.server -d dist            # then open http://localhost:8000
 ```
+
+Building the Forgejo extension needs Node.js 20 or later. Without that step the site builds as
+before, just without the Forgejo panel.
 
 Serving `dist` over HTTP matters: opened as a `file://` URL, the service worker that gives kernels
 access to the file browser is not available.

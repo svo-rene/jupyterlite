@@ -114,3 +114,8 @@ dmypy.json
 # jupyterlite
 *.doit.db
 _output
+
+# jupyterlite-forgejo build output
+forgejo/node_modules/
+forgejo/lib/
+forgejo/labextensions/

@@ -1,0 +1,34 @@
+{
+  "title": "Forgejo",
+  "description": "Anmeldung bei Forgejo und Abgleich von Repositories mit der Dateiliste",
+  "jupyter.lab.setting-icon": "jupyterlite-forgejo:icon",
+  "jupyter.lab.setting-icon-label": "Forgejo",
+  "type": "object",
+  "properties": {
+    "url": {
+      "title": "Forgejo-Adresse",
+      "description": "Basis-URL der Forgejo-Instanz, z. B. https://git.example.org",
+      "type": "string",
+      "default": ""
+    },
+    "clientId": {
+      "title": "OAuth2-Client-ID",
+      "description": "Client-ID der OAuth2-Anwendung in Forgejo (öffentlicher Client, ohne Secret)",
+      "type": "string",
+      "default": ""
+    },
+    "scope": {
+      "title": "OAuth2-Scope",
+      "description": "Angefragte Berechtigungen, durch Leerzeichen getrennt. Leer bedeutet: alles, was das Konto darf.",
+      "type": "string",
+      "default": ""
+    },
+    "redirectPath": {
+      "title": "Rücksprungseite",
+      "description": "Pfad der Rücksprungseite, relativ zur Wurzel der JupyterLite-Seite",
+      "type": "string",
+      "default": "forgejo-callback.html"
+    }
+  },
+  "additionalProperties": false
+}
