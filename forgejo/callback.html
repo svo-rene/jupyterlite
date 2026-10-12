@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Anmeldung bei Forgejo</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        margin: 2rem;
+        color: #222;
+        background: #fff;
+      }
+      @media (prefers-color-scheme: dark) {
+        body {
+          color: #ddd;
+          background: #111;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <p id="message">Anmeldung wird abgeschlossen …</p>
+    <script>
+      // Forgejo redirects the login popup here. Hand code and state to the
+      // JupyterLite tab (jupyterlite-forgejo, src/auth.ts) and close.
+      (function () {
+        var params = new URLSearchParams(window.location.search);
+        var message = {
+          type: 'forgejo-oauth',
+          code: params.get('code') || undefined,
+          state: params.get('state') || undefined,
+          error: params.get('error') || undefined,
+          errorDescription: params.get('error_description') || undefined
+        };
+        if (window.opener) {
+          try {
+            window.opener.postMessage(message, window.location.origin);
+          } catch (e) {
+            // the opener is gone; the channel below still reaches it
+          }
+        }
+        if (typeof BroadcastChannel !== 'undefined') {
+          var channel = new BroadcastChannel('jupyterlite-forgejo-oauth');
+          channel.postMessage(message);
+          channel.close();
+        }
+        // drop the code from the address bar and history
+        window.history.replaceState(null, '', window.location.pathname);
+        document.getElementById('message').textContent = message.error
+          ? 'Die Anmeldung hat nicht geklappt. Du kannst dieses Fenster schließen.'
+          : 'Angemeldet. Du kannst dieses Fenster schließen.';
+        window.setTimeout(function () {
+          window.close();
+        }, 300);
+      })();
+    </script>
+  </body>
+</html>

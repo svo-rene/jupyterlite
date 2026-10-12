@@ -1,5 +1,9 @@
 {
   "@jupyterlab/translation-extension:plugin": {
     "locale": "de_DE"
+  },
+  "jupyterlite-forgejo:plugin": {
+    "url": "https://git.inf7.eu",
+    "clientId": ""
   }
 }
