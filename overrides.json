@@ -4,6 +4,6 @@
   },
   "jupyterlite-forgejo:plugin": {
     "url": "https://git.inf7.eu",
-    "clientId": ""
+    "clientId": "d5b28cf9-4e28-44c0-b3d9-d953a66caab3"
   }
 }
